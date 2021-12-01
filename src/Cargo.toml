@@ -1,0 +1,6 @@
+[workspace]
+members = [
+  "asset_gen",
+  "render",
+  "game",
+]

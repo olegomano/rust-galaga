@@ -1,0 +1,18 @@
+/home/oleg/Documents/dev/galaga/src/target/rls/debug/deps/matrixmultiply-ab832608860acfc9.rmeta: /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/lib.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/debugmacros.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/loopmacros.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/archparam.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/gemm.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/kernel.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/aligned_alloc.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/util.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/x86/mod.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/x86/macros.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/dgemm_kernel.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/sgemm_kernel.rs
+
+/home/oleg/Documents/dev/galaga/src/target/rls/debug/deps/matrixmultiply-ab832608860acfc9.d: /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/lib.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/debugmacros.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/loopmacros.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/archparam.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/gemm.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/kernel.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/aligned_alloc.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/util.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/x86/mod.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/x86/macros.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/dgemm_kernel.rs /home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/sgemm_kernel.rs
+
+/home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/lib.rs:
+/home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/debugmacros.rs:
+/home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/loopmacros.rs:
+/home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/archparam.rs:
+/home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/gemm.rs:
+/home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/kernel.rs:
+/home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/aligned_alloc.rs:
+/home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/util.rs:
+/home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/x86/mod.rs:
+/home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/x86/macros.rs:
+/home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/dgemm_kernel.rs:
+/home/oleg/.cargo/registry/src/github.com-1ecc6299db9ec823/matrixmultiply-0.2.4/src/sgemm_kernel.rs:
+
+# env-dep:MMTEST_FEATURE
