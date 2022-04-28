@@ -1,4 +1,6 @@
 use render;
+use render::material;
+use render::texture;
 use render::window;
 use render::sprite_shader::SpriteShader;
 use sdl2::event::Event;
@@ -9,18 +11,20 @@ extern crate nalgebra_glm as glm;
 struct Game{
     sprite_shader : render::sprite_shader::SpriteShader,
     transform : glm::Mat4,
-    count : f32
+    count : f32,
+    texture : material::Material,
 }
 
 impl Game {
     fn new() -> Self{
         let mut transform = glm::identity();
-        transform = glm::scale(&transform, &glm::vec3(0.5, 0.5,0.5));
-
+        transform = glm::scale(&transform, &glm::vec3(0.8, 0.8,0.8));
+        
         return Self{
             sprite_shader : render::sprite_shader::SpriteShader::new().unwrap(),
             transform : transform,
             count : 0.0,
+            texture : material::Material::from_dir("asset","txt","png").unwrap()
         }
     }
 }
@@ -28,13 +32,15 @@ impl Game {
 impl render::window::FrameHandler for Game{
     fn HandleFrame(&mut self){
         self.transform = glm::rotate_z(&self.transform,0.001);
-        self.sprite_shader.Render(&self.transform);      
+        self.sprite_shader.Render(&self.transform, &self.texture);      
         self.count = self.count + 1.0;
     }
 }
 
+
 impl render::window::InputHandler for Game{
     fn HandleInput(&mut self, event: &sdl2::event::Event) {
+    
     }
 }
 

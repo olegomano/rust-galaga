@@ -2,6 +2,7 @@ pub mod sprite_shader;
 pub mod window_instance;
 pub mod window;
 pub mod texture;
+pub mod material;
 mod shader;
 mod gl_error;
 mod vbo;

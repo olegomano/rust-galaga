@@ -26,13 +26,16 @@ pub struct SDLContext {
 
 impl SDLContext {
     pub fn new() -> Self{
+        let w = 1200;
+        let h = 600;
+
         let context = sdl2::init().expect("SDL initialization failed");
         let video_subsystem = context.video().expect("Couldn't get SDL video subsystem");
         ///video_subsystem.gl_attr().set_context_profile(sdl2::video::GLProfile::GLES);
         video_subsystem.gl_attr().set_context_major_version(3);
         video_subsystem.gl_attr().set_context_minor_version(0);
 
-        let mut window = video_subsystem.window("sdl2 window",800,600)
+        let mut window = video_subsystem.window("sdl2 window",w,h)
             .position_centered()
             .opengl()
             .build()
@@ -46,7 +49,7 @@ impl SDLContext {
         }));
 
         unsafe{
-            gl::Viewport(0, 0, 1600, 1200); // set viewport
+            gl::Viewport(0, 0, w as i32, h as i32); // set viewport
             gl::ClearColor(0.3, 0.3, 0.5, 1.0);
         }
 
@@ -56,7 +59,8 @@ impl SDLContext {
             gl::GenVertexArrays(1, &mut vao as *mut _); 
             gl::BindVertexArray(vao);
         }
-
+        //window.maximize();
+        //window.set_fullscreen(sdl2::video::FullscreenType::Desktop);
         return Self{
             context,
             events,

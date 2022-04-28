@@ -1,1 +1,1 @@
-/home/oleg/Documents/dev/galaga/src/target/debug/libasset_gen.rlib: /home/oleg/Documents/dev/galaga/src/asset_gen/src/lib.rs
+/home/oleg/Documents/dev/galaga/src/target/debug/libasset_gen.so: /home/oleg/Documents/dev/galaga/src/asset_gen/src/gl_binding.rs /home/oleg/Documents/dev/galaga/src/asset_gen/src/lib.rs /home/oleg/Documents/dev/galaga/src/asset_gen/src/utils.rs build.rs

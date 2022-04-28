@@ -3,11 +3,8 @@ extern crate gl_generator;
 extern crate nalgebra_glm as glm;
 use super::vbo;
 use super::gl_error;
-
-pub struct Shader{
-    program : gl::types::GLuint,
-}
-
+use std::ffi::CString;
+use std::ffi::CStr;
 
 fn GetError(id : gl::types::GLuint) -> String { 
     let mut len_glint : gl::types::GLint = 0;
@@ -31,7 +28,7 @@ fn GetError(id : gl::types::GLuint) -> String {
 
 
 
-fn CompileShader(shader : &CStr, id : gl::types::GLuint) -> bool{
+pub fn CompileShader(shader : &CStr, id : gl::types::GLuint) -> bool{
     unsafe{
         gl::ShaderSource(id, 1, &shader.as_ptr(), std::ptr::null());
         gl::CompileShader(id);
@@ -41,14 +38,17 @@ fn CompileShader(shader : &CStr, id : gl::types::GLuint) -> bool{
     }
 }
  
-fn Compile(vert : &CStr, frag : &CStr) -> Result<gl::types::GLuint,String> {
+pub fn Compile(vert_str : &str, frag_str : &str) -> Result<gl::types::GLuint,String> {
+    let vert = CString::new(vert_str).unwrap();
+    let frag = CString::new(frag_str).unwrap();
+ 
     let vert_id = unsafe { gl::CreateShader(gl::VERTEX_SHADER) };
     let frag_id = unsafe { gl::CreateShader(gl::FRAGMENT_SHADER) };
-    if !CompileShader(vert, vert_id) {
+    if !CompileShader(&vert, vert_id) {
         let err = "Vertex Compilation Failed:\n ".to_string() + &GetError(vert_id);
         return Err(err.to_string());
     }
-    if !CompileShader(frag, frag_id) {
+    if !CompileShader(&frag, frag_id) {
         let err = "Fragment Compilation Failed:\n ".to_string() + &GetError(frag_id);
         return Err(err.to_string());
     }
@@ -73,68 +73,59 @@ fn Compile(vert : &CStr, frag : &CStr) -> Result<gl::types::GLuint,String> {
     return Ok(program);
 }
 
-
-
-
-
-use std::ffi::{CString, CStr};
-impl Shader{
-    pub fn new(vert : &str, frag : &str) -> Result<Shader,String> {
-        let vert_str = CString::new(vert).unwrap();
-        let frag_str = CString::new(frag).unwrap();
-        let program  = Compile(&vert_str, &frag_str)?;
-        return Ok(Self{program : program})
+pub fn FindAttribute(program : gl::types::GLuint, name : &str) -> Option<gl::types::GLint>{
+unsafe{
+    let name_str = CString::new(name).unwrap();
+    let location = gl::GetAttribLocation(program, name_str.as_ptr());
+    if location == -1{
+         return None;
     }
-    
-    pub fn Enable(&self){
-        unsafe{
-            gl::UseProgram(self.program);
-        }
-    }
+    return Some(location);
+}
+}
 
-     pub fn FindUniform(&self, name : &str) -> Option<gl::types::GLint>{
-         unsafe{
-            let name_str = CString::new(name).unwrap();
-            let location = gl::GetUniformLocation(self.program,name_str.as_ptr());
-            if location == -1 {
-                return None;
-            }
-            return Some(location);
-        }
+pub fn FindUniform(program : gl::types::GLuint, name : &str) -> Option<gl::types::GLint>{
+unsafe{
+    
+    let name_str = CString::new(name).unwrap();
+    let location = gl::GetUniformLocation(program, name_str.as_ptr());
+    if location == -1{
+         return None;
     }
-    
-     pub fn FindAttribute(&self, name : &str) -> Option<gl::types::GLint>{
-         unsafe{
-             let name_str = CString::new(name).unwrap();
-             let location = gl::GetAttribLocation(self.program,name_str.as_ptr());
-             if location == -1{
-                 return None;
-             }
-             return Some(location);
-         }
-     }
+    return Some(location);
+}
+}
 
-     pub fn UniformMat4(&self,u : gl::types::GLint, mat : &glm::Mat4 ){
-         unsafe{
-             gl::UniformMatrix4fv(u,1,gl::FALSE, glm::value_ptr(mat).as_ptr() );
-         }
-         gl_error::PrintError();
-     }
+
+pub fn Attribute(a : gl::types::GLuint, buffer : &vbo::VboView ){
+unsafe{
+    gl::EnableVertexAttribArray(a); 
+    gl::VertexAttribPointer(
+        a,
+        buffer.width as i32,
+        gl::FLOAT,gl::FALSE,buffer.stride as i32, 
+        buffer.start as *const gl::types::GLvoid);
+} 
+    gl_error::PrintError();
+}
+
+pub fn Uniform1i(u : gl::types::GLint, int : i32){
+unsafe{
+    gl::Uniform1i(u,int as gl::types::GLint);
+}
+    gl_error::PrintError();
+}
+
+pub fn UniformMat4(u : gl::types::GLint, mat : &glm::Mat4 ){
+unsafe{
+    gl::UniformMatrix4fv(u,1,gl::FALSE, glm::value_ptr(mat).as_ptr() );
+}
+    gl_error::PrintError();
+}
     
-     pub fn UniformVec4(&self, u : gl::types::GLint, vec : &glm::Vec4){
-         unsafe{
-             gl::Uniform4fv(u,1,glm::value_ptr(vec).as_ptr());
-         }
-         gl_error::PrintError();
-     }
-     
-     pub fn Attribute(&self,a : gl::types::GLuint, buffer : &vbo::VboView ){
-         unsafe{
-             gl::EnableVertexAttribArray(a); 
-             gl::VertexAttribPointer(a,buffer.width as i32,gl::FLOAT,gl::FALSE,buffer.stride as i32, 
-                 buffer.start as *const gl::types::GLvoid);
-             //gl::VertexAttribPointer(a,buffer.Width(),gl::FLOAT,gl::FALSE,0,std::ptr::null()); 
-         } 
-         gl_error::PrintError();
-     }
+pub fn UniformVec4(u : gl::types::GLint, vec : &glm::Vec4){
+unsafe{
+    gl::Uniform4fv(u,1,glm::value_ptr(vec).as_ptr());
+}
+    gl_error::PrintError();
 }
