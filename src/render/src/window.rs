@@ -26,8 +26,8 @@ pub struct SDLContext {
 
 impl SDLContext {
     pub fn new() -> Self{
-        let w = 1200;
-        let h = 600;
+        let w = 200;
+        let h = 400;
 
         let context = sdl2::init().expect("SDL initialization failed");
         let video_subsystem = context.video().expect("Couldn't get SDL video subsystem");

@@ -16,7 +16,7 @@ def package_assets(dst_folder):
         for f in files:
             copy2( Path("./asset",f),  Path(dst_folder,f))
 
-
+#pub const BYTES: &[u8] = include_bytes!("large-binary-blob");
 def build_web():
     package_assets("./out/web")
     pwd = os.getcwd()

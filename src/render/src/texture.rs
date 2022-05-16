@@ -6,6 +6,12 @@ use std::io;
 use std::io::Read;
 use std::io::BufReader;
 use std::fs::File;
+use super::gl_error;
+use std::io::Cursor;
+
+fn GetGlError() -> Option<String> {
+    return gl_error::GetError();
+}
 
 #[derive(Debug, Copy, Clone)]
 pub struct Texture{
@@ -13,6 +19,7 @@ pub struct Texture{
 }
 
 
+#[asset_gen::gl_error_trace]
 fn CreateTexture() -> Option<gl::types::GLuint> {
     unsafe{
     let mut texture_id : gl::types::GLuint = 0;
@@ -30,6 +37,7 @@ fn CreateTexture() -> Option<gl::types::GLuint> {
 }
 
 
+#[asset_gen::gl_error_trace]
 fn UpdateTexture(texture : gl::types::GLuint, w : i32, h : i32,buffer : &[u8]){
     unsafe{
         println!("Updating texture {} (w,h): {} {}", texture, w,h);
@@ -40,6 +48,9 @@ fn UpdateTexture(texture : gl::types::GLuint, w : i32, h : i32,buffer : &[u8]){
 
 
 impl Texture{     
+  
+   #[asset_gen::timed]
+   #[asset_gen::gl_error_trace]
     pub fn from_buffer(width : u32, height : u32, buffer : &[u8]) -> Result<Self,String>{
         let texture = CreateTexture().unwrap();
         UpdateTexture(texture,width as i32,height as i32,buffer);
@@ -49,6 +60,7 @@ impl Texture{
     }
     
    #[asset_gen::timed]
+   #[asset_gen::gl_error_trace]
    pub fn from_path(path : &str) -> Result<Self,String>{
         let image = image::open(path).unwrap().into_rgba8();
         let buffer : &[u8] = image.as_raw();  
@@ -56,6 +68,7 @@ impl Texture{
         return Texture::from_buffer(image.width(),image.height(),buffer);
     }
 
+    #[asset_gen::gl_error_trace]
     pub fn Bind(&self, texture_index : gl::types::GLuint){
         unsafe{
             gl::ActiveTexture(texture_index);

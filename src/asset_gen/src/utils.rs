@@ -2,6 +2,30 @@ use proc_macro::TokenStream;
 use proc_macro::TokenTree;
 use quote::{quote, ToTokens};
 
+extern crate syn;
+
+pub fn WrapFunction(metadata: TokenStream, input: TokenStream, pre_function : proc_macro2::TokenStream, post_function : proc_macro2::TokenStream) -> TokenStream{
+    let input_parsed = syn::parse(input).unwrap();
+    let syn::ItemFn { attrs, vis, sig, block } = input_parsed;
+    let stmts = &block.stmts;
+
+    let result = quote! {
+        #[track_caller]
+        #(#attrs)* #vis #sig { 
+            #pre_function
+            let _function_ = ||{
+                #(#stmts)*
+            };
+            let _function_result_ = _function_();
+            #post_function
+            return _function_result_;
+        }
+    };
+    return TokenStream::from(result);
+}
+
+
+
 pub fn ToMemberIdent(name : &str) -> proc_macro2::TokenStream{
     let ident_str = format!("self.{}", name);
     let ident_token = ident_str.parse::<::proc_macro2::TokenStream>().unwrap();

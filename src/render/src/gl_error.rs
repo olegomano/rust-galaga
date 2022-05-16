@@ -1,7 +1,6 @@
 extern crate gl;
 
 pub fn GetError() -> Option<String>{
-
     let mut has_error = false;
     let mut error_string : String = "".to_string();
 
@@ -28,7 +27,6 @@ pub fn GetError() -> Option<String>{
                     _ => "unknown error"
             };
             error_string.push_str(error)
-
         }
     }
 }

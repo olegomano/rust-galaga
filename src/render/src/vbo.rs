@@ -1,4 +1,12 @@
 extern crate gl;
+use super::gl_error;
+use super::asset_gen;
+
+
+fn GetGlError() -> Option<String> {
+    return gl_error::GetError();
+}
+
 
 #[derive(Copy,Clone,Debug)]
 pub struct Vbo{
@@ -41,12 +49,14 @@ impl Vbo{
         }
     }
 
+    #[asset_gen::gl_error_trace]
     pub fn Bind(&self){
         unsafe{
             gl::BindBuffer(gl::ARRAY_BUFFER,self.handle); 
         }
     }
-
+    
+    #[asset_gen::gl_error_trace]
     pub fn Unbind(&self){
         unsafe{
             gl::BindBuffer(gl::ARRAY_BUFFER,0);

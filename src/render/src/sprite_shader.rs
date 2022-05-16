@@ -6,32 +6,28 @@ use super::gl_error;
 use super::texture;
 use super::material;
 
-#[macro_use]
-extern crate asset_gen;
-
 static vert_shader : &str =  
     "#version 300 es
-     uniform mat4 MVPMatrix;
-     in vec4 vPosition;
-     in vec2 vUv;
+     uniform mat4 u_mat4x4_modelmat;
+     in vec4 a_vec4_vertex;
+     in vec2 a_vec2_uv;
 
      out vec2 uv;
      void main() {
-        uv = vUv;
-        gl_Position = MVPMatrix * vPosition;
+        uv = a_vec2_uv;
+        gl_Position = u_mat4x4_modelmat * a_vec4_vertex;
      }";
 
 static frag_shader : &str =
     "#version 300 es
      precision mediump float;
-     uniform vec4 vColor;
-     uniform sampler2D tDiffuse;
-     uniform sampler2D tDisplace;
+     uniform sampler2D t_diffuse;
+     uniform sampler2D t_displace;
 
      in vec2 uv;
      out vec4 FragColor;
      void main() { 
-        FragColor = texture(tDiffuse,uv) + texture(tDisplace,uv);
+        FragColor = texture(t_diffuse,uv) + texture(t_displace,uv);
      }";
 
 static quad_vert : &[f32] = &[
@@ -45,21 +41,13 @@ static quad_vert : &[f32] = &[
 ];
 
 
-fn GetUniformLocation( program_id : gl::types::GLuint, name : &str) -> gl::types::GLint {
-    let uniform = shader::FindUniform(program_id,name);
-    match  uniform {
-        Some(x) => {return x},
-        None => {println!("Failed to find uniform {}",name); return 0}
-    }
+fn GetUniformLocation( program_id : gl::types::GLuint, name : &str) -> Option<gl::types::GLint> {
+    return shader::FindUniform(program_id,name);
 } 
 
 
-fn GetAttributeLocation( program_id : gl::types::GLuint, name : &str) -> gl::types::GLint {
-    let attr = shader::FindAttribute(program_id,name);
-    match attr {
-        Some(x) => {return x},
-        None => {println!("Failed to find attribute {}",name); return 0;}
-    }
+fn GetAttributeLocation( program_id : gl::types::GLuint, name : &str) -> Option<gl::types::GLint> {
+    return shader::FindAttribute(program_id,name);
 } 
 
 fn CompileShader(vertex : &str,  fragment : &str) -> Result<gl::types::GLuint, String> {
@@ -69,12 +57,11 @@ fn CompileShader(vertex : &str,  fragment : &str) -> Result<gl::types::GLuint, S
 #[derive(Default)]
 #[derive(asset_gen::GlBinding)]
 pub struct GLBindings{
-    u_model_matrix : gl::types::GLint,
-    u_color : gl::types::GLint,
+    u_mat4x4_modelmat : gl::types::GLint,
     t_diffuse : gl::types::GLint,
     t_displace : gl::types::GLint,
-    a_vertex : gl::types::GLint,
-    a_uv : gl::types::GLint,
+    a_vec4_vertex : gl::types::GLint,
+    a_vec2_uv : gl::types::GLint,
     program_id : gl::types::GLuint,
 }
 
@@ -88,7 +75,7 @@ impl SpriteShader{
     {
         let vbo = vbo::Vbo::new(quad_vert);
         let mut binding : GLBindings = GLBindings::new(vert_shader,frag_shader).unwrap();
-        binding.GlBind();
+        println!("{}",binding.GetGlInfo());
         return Ok(Self{
             quad_vbo : vbo,
             binding : binding,
@@ -100,23 +87,21 @@ impl SpriteShader{
             transform : &glm::Mat4, 
             texture: &material::Material){
 
-        self.shader.Enable();
-        self.shader.UniformMat4(self.binding.u_model_matrix, transform);
-        let color : glm::Vec4= glm::Vec4::new(1.0,1.0,1.0,1.0);
-        self.quad_vbo.Bind();
-        //self.shader.UniformVec4(self.u_color, &color);
+        shader::UseProgram(self.binding.program_id);
+        shader::UniformMat4(self.binding.u_mat4x4_modelmat, transform);
+        self.quad_vbo.Bind(); 
         
         texture.Diffuse().Bind(gl::TEXTURE0);
-        self.shader.Uniform1i(self.t_diffuse,0);
         texture.Displace().Bind(gl::TEXTURE1);
-        self.shader.Uniform1i(self.t_displace,0);
+        shader::Uniform1i(self.binding.t_diffuse,0);
+        shader::Uniform1i(self.binding.t_displace,1);
 
-        self.shader.Attribute(self.a_vertex as gl::types::GLuint , &self.quad_vbo.MakeView(0,4,24,146));
-        self.shader.Attribute(self.a_uv as gl::types::GLuint , &self.quad_vbo.MakeView(16,2,24,146));
+        shader::Attribute(self.binding.a_vec4_vertex as gl::types::GLuint , &self.quad_vbo.MakeView(0,4,24,146));
+        shader::Attribute(self.binding.a_vec2_uv as gl::types::GLuint , &self.quad_vbo.MakeView(16,2,24,146));
         
         unsafe{
             gl::DrawArrays(gl::TRIANGLES,0,6);
+            gl_error::PrintError(); 
         }
-        gl_error::PrintError(); 
     }
 }

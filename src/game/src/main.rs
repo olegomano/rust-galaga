@@ -6,6 +6,10 @@ use render::sprite_shader::SpriteShader;
 use sdl2::event::Event;
 use std::pin::Pin;
 use std::marker::PhantomPinned;
+use render::asset_index;
+use render::asset;
+use std::rc::Rc;
+
 extern crate nalgebra_glm as glm;
 
 struct Game{
@@ -13,18 +17,24 @@ struct Game{
     transform : glm::Mat4,
     count : f32,
     texture : material::Material,
+    asset_index : Rc<asset_index::AssetIndex>,
 }
+
 
 impl Game {
     fn new() -> Self{
         let mut transform = glm::identity();
         transform = glm::scale(&transform, &glm::vec3(0.8, 0.8,0.8));
         
+        let asset_index = Rc::new(asset_index::AssetIndex::new());
+        let asset = asset::Asset::new("txt_diffuse.rbga",  asset_index.clone());
+
         return Self{
             sprite_shader : render::sprite_shader::SpriteShader::new().unwrap(),
             transform : transform,
             count : 0.0,
-            texture : material::Material::from_dir("asset","txt","png").unwrap()
+            texture : material::Material::from_asset(&asset).unwrap(),
+            asset_index : asset_index,
         }
     }
 }

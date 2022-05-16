@@ -102,7 +102,7 @@ impl GlMemberEnum{
         match self{
             GlMemberEnum::Uniform(u) => return self.UniformBindFunction(name),
             GlMemberEnum::Attribute(u) => return self.AttributeBindFunction(name),
-            GlMemberEnum::Texture(u) => return self.AttributeBindFunction(name),
+            GlMemberEnum::Texture(u) => return self.UniformBindFunction(name),
             _ => return quote!{}
         }
     }
@@ -219,17 +219,17 @@ impl GlBindingGenerator{
         for member in self.info.Members() {
             let member_ident = &member.ident;
             member_init_tokens.extend(quote!{
-                #member_ident : -1,
+                #member_ident : 0,
             });
         }
 
         return TokenStream::from(quote!{
             impl #struct_ident{
-                pub fn new(vert_shader : &str, frag_shader : &str) -> Option<Self> {
+                pub fn new(vert_shader_str : &str, frag_shader_str : &str) -> Option<Self> {
                     let mut result =  Self{
                         #member_init_tokens
                     };
-                    match CompileShader(vert_shader,frag_shader){
+                    match CompileShader(vert_shader_str,frag_shader_str){
                         Ok(o) => result.program_id = o, 
                         Err(e) => {
                             println!("Shader compilation failed: {}",e);

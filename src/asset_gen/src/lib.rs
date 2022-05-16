@@ -38,6 +38,28 @@ pub fn timed(metadata: TokenStream, input: TokenStream) -> TokenStream {
 }
 
 #[macro_export]
+#[proc_macro_attribute]
+pub fn gl_error_trace(metadata : TokenStream, input: TokenStream) -> TokenStream{
+    
+    let input_parsed = syn::parse(input.clone()).unwrap();
+    let syn::ItemFn { attrs, vis, sig, block } = input_parsed;
+    
+    let check_gl_error = quote!{
+        match GetGlError() {
+            Some(error) => {
+                let caller_location = std::panic::Location::caller();
+                let caller_line_number = caller_location.line();
+                println!("{} glError: {}",caller_location,error);
+            },
+            None => {},
+        };
+    };
+    
+    return utils::WrapFunction(metadata,input,quote!{},check_gl_error);
+}
+
+
+#[macro_export]
 #[proc_macro_derive(GlBinding)]
 pub fn gl_binding(input: TokenStream) -> TokenStream {
     let binding_generator = gl_binding::GlBindingGenerator::new(input);
@@ -52,4 +74,12 @@ pub fn gl_binding(input: TokenStream) -> TokenStream {
             #binding_tokens
         }
     );
+}
+
+#[macro_export]
+#[proc_macro_derive(asset_index)]
+pub fn asset_index(input: TokenStream) -> TokenStream {
+    return TokenStream::from(quote!{
+        
+    })
 } 
