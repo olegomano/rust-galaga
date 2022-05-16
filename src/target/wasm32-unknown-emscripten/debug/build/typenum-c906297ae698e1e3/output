@@ -1,2 +1,0 @@
-cargo:rustc-env=TYPENUM_BUILD_CONSTS=/home/oleg/Documents/dev/galaga/src/target/wasm32-unknown-emscripten/debug/build/typenum-c906297ae698e1e3/out/consts.rs
-cargo:rustc-env=TYPENUM_BUILD_OP=/home/oleg/Documents/dev/galaga/src/target/wasm32-unknown-emscripten/debug/build/typenum-c906297ae698e1e3/out/op.rs
