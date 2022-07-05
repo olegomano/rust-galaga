@@ -26,8 +26,8 @@ pub struct SDLContext {
 
 impl SDLContext {
     pub fn new() -> Self{
-        let w = 200;
-        let h = 400;
+        let w = 1920;
+        let h = 1080;
 
         let context = sdl2::init().expect("SDL initialization failed");
         let video_subsystem = context.video().expect("Couldn't get SDL video subsystem");
@@ -56,6 +56,7 @@ impl SDLContext {
         let mut events = context.event_pump().expect("Failed to get SDL event pump");
         let mut vao : gl::types::GLuint = 0; 
         unsafe {
+            gl::Enable(gl::DEPTH_TEST);
             gl::GenVertexArrays(1, &mut vao as *mut _); 
             gl::BindVertexArray(vao);
         }
@@ -79,7 +80,7 @@ impl SDLContext {
             }
         }
         unsafe{
-            gl::Clear(gl::COLOR_BUFFER_BIT);
+            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         } 
         frame_handler.HandleFrame();
         self.window.gl_swap_window();

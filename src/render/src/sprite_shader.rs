@@ -20,11 +20,11 @@ static vert_shader : &str =
 
 static frag_shader : &str =
     "#version 300 es
-     precision mediump float;
-     uniform sampler2D t_diffuse;
-     uniform sampler2D t_displace;
-
-     in vec2 uv;
+    precision mediump float;
+    uniform sampler2D t_diffuse;
+    uniform sampler2D t_displace;
+    
+    in vec2 uv;
      out vec4 FragColor;
      void main() { 
         FragColor = texture(t_diffuse,uv) + texture(t_displace,uv);
@@ -81,7 +81,7 @@ impl SpriteShader{
             binding : binding,
         })
     }
-
+    
     pub fn Render( 
             &mut self,
             transform : &glm::Mat4, 
@@ -89,6 +89,7 @@ impl SpriteShader{
 
         shader::UseProgram(self.binding.program_id);
         shader::UniformMat4(self.binding.u_mat4x4_modelmat, transform);
+        
         self.quad_vbo.Bind(); 
         
         texture.Diffuse().Bind(gl::TEXTURE0);

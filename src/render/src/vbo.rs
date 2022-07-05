@@ -23,8 +23,18 @@ pub struct VboView{
     pub count : u32,
 }
 
+
+#[derive(Copy,Clone,Debug)]
+pub struct VboChunk{
+    owner : Vbo,
+    handle : gl::types::GLuint,
+
+}
+
+
 impl Vbo{
 
+    #[asset_gen::timed]
     pub fn new<T>(buffer: &[T]) -> Vbo {
         let mut handle : gl::types::GLuint= 0;
         unsafe{
@@ -67,6 +77,7 @@ impl Vbo{
         return self.size as i32;
     }
 
+    #[asset_gen::gl_error_trace]
     fn Write<T>(&mut self, buffer : &[T]) {
         let len  = buffer.len();
         let size = buffer.len() * std::mem::size_of::<T>(); 

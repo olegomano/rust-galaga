@@ -1,59 +1,53 @@
 import os
 import pathlib
+import packager
 
 class RustAssetIndex:
-    def __init__(self,src_dir,dst_file):
-        self._src_dir = str(pathlib.Path(src_dir).resolve())
-        self._dst_file = str(pathlib.Path(dst_file).resolve())
-    
+    def __init__(self,asset_list,dst_file):
+        self._dst_file = dst_file
+        self._asset_list = asset_list
+
     def run(self):
-        all_assets = self.collect_assets()
-        print(all_assets)
-        rust_string = self.generate_rust(all_assets)
+        rust_string = self.generate_rust(self._asset_list)
         f = open(self._dst_file,"w")
         f.write(rust_string)
         f.close()
-    
-    def collect_assets(self):
-        all_assets = {}
-
-        asset_root = str(pathlib.Path(self._src_dir).resolve())
-
-        for root, dirs, files in os.walk(self._src_dir):
-            for file in files:
-                asset_path = pathlib.Path( str(os.path.join(root,file) ))
-                asset_relative_path = str(asset_path.resolve())[len(asset_root) + 1:]
-                all_assets[asset_relative_path] = asset_relative_path.replace("/","_").split(".")[0]
-        return all_assets
 
 
-
-    def generate_rust(self,asset_map):
+    def generate_rust(self,asset_list):
         struct_decl = """
         use std::collections::HashMap;
+        use include_bytes_aligned::include_bytes_aligned;
         pub struct AssetIndex{
             pub index : HashMap<String,&'static [u8]> 
         }"""
 
         map_insert = ""
         index_decl = ""
-        for f in asset_map:
+        for asset in asset_list:
+            for f in asset.output_files:
+                local_path = f[len(asset.dst_root) + 1:]
+                var_name = local_path.replace(".","_")
+                var_name = var_name.replace("/","_")
 
-            #pub const txt_displace:&[u8]=include_bytes!("/home/oleg/Documents/dev/galaga/asset/txt_displace.png");
-            full_asset_path = os.path.join(self._src_dir,f)
-            index_decl = index_decl + "const {}:&[u8]=include_bytes!(\"{}\");\n".format(asset_map[f],full_asset_path)
-            map_insert = map_insert+"asset_index.insert(\"{}\".to_owned(),{});".format(f,asset_map[f]) + "\n"
+                index_decl = index_decl + "static {}:&'static [u8]=include_bytes_aligned!(4,\"{}\");\n".format(var_name,f)
+                map_insert = map_insert +"asset_index.insert(\"{}\".to_owned(),{});".format(local_path,var_name) + "\n"
 
-        constructor = "impl AssetIndex{\n"
-        constructor = constructor + "pub fn new() -> Self{\n"
-        constructor = constructor + "let mut asset_index : HashMap<String,&[u8]> = HashMap::new();\n"
-        constructor = constructor + map_insert + "\n"
-        constructor = constructor + "return Self{\n"
-        constructor = constructor + "   index : asset_index,\n"
-        constructor = constructor + "}\n}\n}\n"
-        final_string = index_decl + "\n" + struct_decl + "\n" + constructor
-        return final_string
+        constructor = """
+        impl AssetIndex{ 
+            pub fn new() -> Self {
+                let mut asset_index : HashMap<String,&[u8]> = HashMap::new();
+                {}
+                return Self{
+                    index : asset_index
+                }
+            }
+        }"""
+        constructor = constructor.replace("{}",map_insert)
+        return struct_decl + "\n" + index_decl + "\n" + constructor
 
 if __name__ == "__main__":
-    a = RustAssetIndex("../out/asset","../src/render/src/asset_index.rs")    
+    a = packager.AssetPackager("../asset","../out/asset/")
     a.run()
+    i = RustAssetIndex(a._tracked_assets,"../src/render/src/asset_index.rs")    
+    i.run()
